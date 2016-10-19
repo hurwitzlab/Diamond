@@ -10,6 +10,7 @@ Instructions:
 
 1) Edit the Variable Declaration section at the top of submit.sh to include the correct paths.
 2) Execute submit.sh
+    
     $ ./submit.sh
 
 For more information on Diamond see the user manual at http://ab.inf.uni-tuebingen.de/data/software/diamond/download/public/manual.pdf
