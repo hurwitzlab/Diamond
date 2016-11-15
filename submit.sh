@@ -1,35 +1,9 @@
 #!/bin/bash
 
-#---------- VARIABLE DECLARATIONS ----------
-#Current working directory
-export CWD=$PWD
-
-#Script directory
-export SCRIPT_DIR="$CWD/scripts"
-
-#Fasta directory containing files to run Diamond
-export FASTA_DIR="/rsgrps/bhurwitz/jetjr/practice/reads"
-
-#Directory containing Diamond executable
-export DIAMOND_DIR="/rsgrps/bhurwitz/hurwitzlab/bin"
-
-#Directory and basename of Diamond database
-export DIAMOND_DB="$CWD/uniprot_sprot"
-
-#Output directory
-export OUT_DIR="$CWD/diamond_out"
-
-#Number of CPU Threads
-export THREADS="4"
-
-#Standard Out/Error
-export STDERR_DIR="$CWD/std-err"
-export STDOUT_DIR="$CWD/std-out"
-# ------------------------------------------
+source ./settings.sh
 
 if [[ ! -d "$FASTA_DIR" ]]; then
-    echo "$FASTA_DIR does not exist. Directory created, but make sure FASTA files are there before you continue. Job terminated."
-    mkdir -p "$FASTA_DIR"
+    echo "$FASTA_DIR does not exist. Job terminated."
     exit 1
 fi
 
@@ -67,7 +41,8 @@ echo "FASTA files to be processed:" `cat $FASTA_LIST`
 while read FASTA; do
     export FASTA="$FASTA"
     NUM_FILES=`wc -l $FASTA_LIST | cut -d ' ' -f 1`
+    export FILENAME=$(basename $FASTA | cut -d '.' -f 1)    
 
-    JOB_ID1=`qsub -v SCRIPT_DIR,FASTA,FASTA_DIR,DIAMOND_DIR,DIAMOND_DB,OUT_DIR,THREADS -N Diamond_X -e "$STDERR_DIR" -o "$STDOUT_DIR" $SCRIPT_DIR/diamondx.sh`
+    JOB_ID1=`qsub -v SCRIPT_DIR,FASTA,FASTA_DIR,DIAMOND_DIR,DIAMOND_DB,OUT_DIR,THREADS,FILENAME,ID_DB -N Diamond_X -e "$STDERR_DIR" -o "$STDOUT_DIR" $SCRIPT_DIR/diamondx.sh`
 
 done < $FASTA_LIST
