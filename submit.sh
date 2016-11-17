@@ -7,15 +7,26 @@ if [[ ! -d "$FASTA_DIR" ]]; then
     exit 1
 fi
 
-if [[ ! -f "$DIAMOND_DB.dmnd" ]]; then
-    echo "$DIAMOND_DB.dmd does not exist. Edit DIAMOND_DB path and try again. Job terminated."
-    exit 1
-fi
-
 if [[ ! -d "$DIAMOND_DIR" ]]; then
     echo "$DIAMOND_DIR does not exist. You must declare where Diamond is located. Edit DIAMOND_DIR path before you continue. Job terminated."
     exit 1
 fi
+
+if [[ ! -d "$DB_DIR" ]]; then
+    echo "$DB_DIR does not exist. Directory created."
+    mkdir -p "$DB_DIR"
+fi
+
+if [[ "$DIAMOND_DB" == "$DB_DIR/swissprot" && ! -f "$DIAMOND_DB.dmnd" ]]; then
+    echo "$DIAMOND_DB.dmnd not found. Getting it from imicrobe.us"
+    wget -P $DB_DIR/ ftp://ftp.imicrobe.us//diamond-db/swissprot.dmnd
+fi
+
+if [[ "$DIAMOND_DB" == "$DB_DIR/swissprot" && ! -f "$ID_DB" ]]; then
+    echo "$ID_DB not found. Getting it from imicrobe.us"
+    wget -P $DB_DIR/ ftp://ftp.imicrobe.us//diamond-db/swissprot2taxonomy
+fi
+
 
 if [[ ! -d "$OUT_DIR" ]]; then
     echo "$OUT_DIR does not exist. I made it for you and will place diamond output there."
@@ -33,9 +44,8 @@ if [[ ! -d "$STDOUT_DIR" ]]; then
 fi
 
 cd "$FASTA_DIR"
-export FASTA_LIST="$FASTA_DIR/fasta-list"
+export FASTA_LIST="$FASTA_DIR/list"
 pwd
-ls *.fasta > $FASTA_LIST
 echo "FASTA files to be processed:" `cat $FASTA_LIST`
 
 while read FASTA; do

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#---- PBS ALLOCATIONS ----
+
 #PBS -W group_list=bhurwitz
 #PBS -q standard
 #PBS -l select=1:ncpus=4:mem=15gb
